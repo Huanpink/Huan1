@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TOOL">
+<meta name="theme-color" content="#0d0d1a">
+<meta name="mobile-web-app-capable" content="yes">
+<title>TOOL</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100%;overflow-x:hidden;overflow-y:auto}
+body{font-family:system-ui,-apple-system,sans-serif;background:#0d0d1a;color:#fff;padding:env(safe-area-inset-top) 8px 8px;display:flex;justify-content:center}
+.wrap{max-width:380px;width:100%;padding-top:4px;padding-bottom:env(safe-area-inset-bottom)}
+h1{text-align:center;font-size:15px;color:#f5d76e;margin-bottom:5px;letter-spacing:2px;font-weight:900}
+.sides{display:flex;gap:6px;margin-bottom:5px}
+.side{flex:1;background:#1a1a2e;border-radius:10px;padding:5px;border:1px solid #333}
+.side.p{border-color:#3b82f6}
+.side.b{border-color:#ef4444}
+.side-title{text-align:center;font-size:11px;font-weight:700;padding:3px;border-radius:5px;margin-bottom:3px}
+.side.p .side-title{background:#1e3a8a}
+.side.b .side-title{background:#7f1d1d}
+.slots{display:flex;gap:3px;justify-content:center;margin-bottom:3px;min-height:28px;flex-wrap:wrap}
+.slot{width:28px;height:28px;border-radius:6px;background:#111;border:1px solid #444;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;position:relative}
+.slot.on{border-color:#c9a227;background:#2a2200}
+.slot .x{position:absolute;top:-4px;right:-4px;width:13px;height:13px;background:#ef4444;border-radius:50%;font-size:8px;display:none;align-items:center;justify-content:center;color:#fff}
+.slot.on .x{display:flex}
+.sum{text-align:center;font-size:17px;font-weight:900;padding:2px;border-radius:5px}
+.side.p .sum{background:#1e3a8a;color:#93c5fd}
+.side.b .sum{background:#7f1d1d;color:#fca5a5}
+.pick{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:5px}
+.pick button{padding:7px 0;border:none;border-radius:5px;background:#222;color:#fff;font-size:12px;font-weight:700}
+.pick button:active{background:#c9a227;color:#111}
+.active-side{outline:2px solid #c9a227}
+.btn-main{width:100%;padding:10px;border:none;border-radius:8px;background:linear-gradient(90deg,#c9a227,#f5d76e);color:#111;font-size:13px;font-weight:900;margin-bottom:5px}
+.res{background:#1a1a2e;border:1px solid #c9a227;border-radius:8px;padding:6px;margin-bottom:5px;text-align:center}
+.heso{font-size:20px;font-weight:900;color:#f5d76e}
+.chanle{font-size:11px;font-weight:700;margin:1px 0 4px}
+.chan{color:#60a5fa}.le{color:#f87171}
+.rec{display:inline-block;padding:5px 16px;border-radius:6px;font-size:14px;font-weight:900}
+.rec.p{background:#1e3a8a;border:2px solid #3b82f6}
+.rec.b{background:#7f1d1d;border:2px solid #ef4444}
+.actual{display:flex;gap:4px;margin-top:5px}
+.actual button{flex:1;padding:7px;border:none;border-radius:5px;font-size:12px;font-weight:800;color:#fff}
+.actual .bp{background:#1d4ed8}.actual .bb{background:#b91c1c}.actual .bt{background:#15803d}
+.stats{background:#1a1a2e;border-radius:8px;padding:6px 8px;font-size:11px;margin-bottom:5px;border:1px solid #333;display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px 6px}
+.stats span{display:flex;justify-content:space-between}
+.ok{color:#4ade80}.bad{color:#f87171}
+.bar-wrap{grid-column:1/-1;margin-top:3px}
+.bar-label{display:flex;justify-content:space-between;font-size:10px;margin-bottom:2px}
+.bar{height:11px;background:#222;border-radius:5px;overflow:hidden}
+.fill{height:100%;background:linear-gradient(90deg,#16a34a,#4ade80);border-radius:5px;font-size:9px;font-weight:800;color:#052e16;display:flex;align-items:center;justify-content:center;transition:width .3s}
+.bots{display:flex;gap:4px}
+.bots button{flex:1;padding:7px;border:none;border-radius:6px;font-size:11px;font-weight:800;color:#fff}
+.bots .csv{background:#1e3a8a}.bots .clr{background:#7f1d1d}
+.hint{text-align:center;font-size:9px;color:#555;margin-bottom:3px}
+/* Lịch sử dự đoán nằm ngay dưới khung dự đoán */
+.history{background:#1a1a2e;border:1px solid #38384c;border-radius:8px;padding:7px 6px;margin-bottom:5px}
+.history-head{display:flex;justify-content:space-between;align-items:center;font-size:11px;font-weight:800;margin-bottom:5px}
+.history-head small{color:#aaa;font-size:9px;font-weight:500}
+.history-strip{display:flex;gap:4px;overflow-x:auto;scrollbar-width:thin;padding:2px 1px 5px;min-height:33px;-webkit-overflow-scrolling:touch}
+.history-cell{border:0;border-radius:5px;min-width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:white;flex-shrink:0}
+.history-cell.good{background:#15803d}.history-cell.wrong{background:#b91c1c}
+.history-cell.wait{background:#4b5563}.history-cell.tie{background:#176f70}
+.history-empty{color:#8b8b9e;font-size:11px;padding:6px}
+.history-foot{display:flex;justify-content:space-between;font-size:10px;margin-top:3px}
+.history-foot .good-text{color:#4ade80}.history-foot .bad-text{color:#f87171}
+
+.calc-info{font-size:10px;color:#cbd5e1;text-align:center;margin:3px 0 5px}
+.editor{display:none;position:fixed;inset:0;background:#000b;z-index:40;align-items:center;justify-content:center;padding:14px}
+.editor.open{display:flex}.editor-panel{width:100%;max-width:380px;background:#1a1a2e;border:1px solid #c9a227;border-radius:11px;padding:15px}
+.editor-panel h2{font-size:16px;color:#f5d76e;margin-bottom:10px}.editor-panel label{display:block;font-size:12px;margin-top:9px;margin-bottom:4px}
+.editor-panel input{width:100%;padding:11px;border:1px solid #555;border-radius:6px;background:#0d0d1a;color:white;font-size:15px}
+.editor-panel .actions{display:flex;gap:7px;margin-top:12px}.editor-panel button{flex:1;border:0;border-radius:6px;padding:11px;font-weight:800;color:white;background:#1d4ed8}.editor-panel button:last-child{background:#555}
+.undo{background:#66541e!important}.history-cell.selected{outline:2px solid #f5d76e}
+
+.tracker{background:#1a1a2e;border:1px solid #45455b;border-radius:9px;padding:9px;margin:6px 0;font-size:11px}
+.tracker h2{font-size:12px;color:#f5d76e;margin-bottom:5px}.tracker .subtle{color:#aaa;font-size:10px;line-height:1.45;margin:5px 0}
+.tracker-controls{display:flex;gap:5px;align-items:center;margin:5px 0;flex-wrap:wrap}
+.tracker select{background:#10101f;color:white;border:1px solid #626275;border-radius:5px;padding:5px;flex:1;min-width:80px}
+.segment{border:1px solid #38384c;padding:7px;border-radius:6px;margin:5px 0;background:#141427}
+.segment-head{display:flex;justify-content:space-between;gap:5px;font-weight:700;align-items:center}
+.segment small{font-size:10px;color:#bcbccc}.segment .meter{height:5px;background:#34344a;margin:5px 0;border-radius:5px;overflow:hidden}.segment .meter>div{height:100%;background:#22c55e}
+.segment .metrics{display:flex;justify-content:space-between;gap:6px;color:#ccc;font-size:10px;flex-wrap:wrap}
+.signal{padding:7px;border:1px solid #65604b;border-radius:6px;color:#f5d76e;background:#292417;margin:6px 0;font-size:11px;line-height:1.45}
+.signal.muted{background:#171727;border-color:#39394c;color:#b3b3c7}
+.editor-panel{max-height:85dvh;overflow-y:auto}.edit-meta{background:#10101f;border:1px solid #444;border-radius:7px;padding:8px;line-height:1.65;margin:6px 0;font-size:12px}
+
+.track-hint{font-size:10px;color:#a9adbd;line-height:1.4;margin:6px 0}
+.group-toggle{background:none;border:0;color:#fff;width:100%;display:flex;justify-content:space-between;gap:6px;text-align:left;font-size:11px;font-weight:750;padding:3px 0}
+.group-toggle span:last-child{font-size:10px;color:#f2d471;text-align:right}
+.group-children{margin:5px 0 0 7px;padding-left:6px;border-left:2px solid #43435e}
+.depth1{background:#17172c}.depth2{background:#101024}
+.group-actions{display:flex;justify-content:flex-end;gap:6px;margin-top:6px}
+.track-action{border:1px solid #565875;border-radius:5px;background:#24253e;color:#d5d9ff;padding:5px 8px;font-size:10px;font-weight:700}
+.hand-list{max-height:55dvh;overflow:auto;display:grid;gap:5px}
+.hand-row{width:100%;text-align:left;padding:10px 8px;border-radius:6px;border:1px solid #45465b;background:#111225;color:white;font-size:11px}
+
+/* Hai tab độc lập, giữ nguyên dữ liệu và chức năng */
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin:7px 0 9px;position:sticky;top:0;z-index:5;background:#0d0d1a;padding:4px 0}
+.tab-btn{border:1px solid #50516b;background:#1a1a2e;color:#d1d5e4;font-weight:800;padding:10px 4px;border-radius:8px;font-size:12px}
+.tab-btn.selected{background:#c9a227;border-color:#f5d76e;color:#111}
+.tab-page{display:none}.tab-page.selected{display:block}
+.tab-note{font-size:10px;color:#abb0c5;margin:0 0 8px;line-height:1.4}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>TOOL</h1>
+<nav class="tabs" role="tablist" aria-label="Các trang TOOL">
+<button class="tab-btn selected" id="tabButton1" role="tab" aria-selected="true" aria-controls="tabPage1" onclick="switchTab(1)">1 · NHẬP &amp; LƯU</button>
+<button class="tab-btn" id="tabButton2" role="tab" aria-selected="false" aria-controls="tabPage2" onclick="switchTab(2)">2 · PHÂN TÍCH NHÓM</button>
+</nav>
+<div class="tab-page selected" id="tabPage1" role="tabpanel" aria-labelledby="tabButton1">
+<div class="hint">Chạm bên cần chọn → bấm số</div>
+ 
+<div class="sides">
+  <div class="side p active-side" id="sideP" onclick="setSide('p')">
+    <div class="side-title">NHÀ CON</div>
+    <div class="slots" id="slotsP"></div>
+    <div class="sum" id="sumP">0</div>
+  </div>
+  <div class="side b" id="sideB" onclick="setSide('b')">
+    <div class="side-title">NHÀ CÁI</div>
+    <div class="slots" id="slotsB"></div>
+    <div class="sum" id="sumB">0</div>
+  </div>
+</div>
+ 
+<div class="pick">
+  <button onclick="addCard(1)">A</button>
+  <button onclick="addCard(2)">2</button>
+  <button onclick="addCard(3)">3</button>
+  <button onclick="addCard(4)">4</button>
+  <button onclick="addCard(5)">5</button>
+  <button onclick="addCard(6)">6</button>
+  <button onclick="addCard(7)">7</button>
+  <button onclick="addCard(8)">8</button>
+  <button onclick="addCard(9)">9</button>
+  <button onclick="addCard(10)">10</button>
+  <button onclick="addCard(11)">J</button>
+  <button onclick="addCard(12)">Q</button>
+  <button onclick="addCard(13)">K</button>
+  <button onclick="clearSide()" style="background:#7f1d1d">Xóa</button>
+</div>
+ 
+<button class="btn-main" onclick="calc(true)">TÍNH & LƯU</button>
+ 
+<div class="res">
+  <div class="heso" id="heso">-</div>
+  <div class="chanle chan" id="chanle">-</div>
+  <div class="rec p" id="rec">-</div>
+  <div class="calc-info" id="calcInfo">Điểm Baccarat: — · Kết quả: —</div>
+  <div class="actual">
+    <button class="bp" onclick="record('PLAYER')">P</button>
+    <button class="bb" onclick="record('BANKER')">B</button>
+    <button class="bt" onclick="record('TIE')">Hòa</button>
+  </div>
+</div>
+ 
+<div class="history" aria-label="Lịch sử đúng sai">
+  <div class="history-head"><span>LỊCH SỬ Đ / S</span><small>Cũ → mới · Chạm ô để sửa ván</small></div>
+  <div class="history-strip" id="historyStrip"><span class="history-empty">Chưa có dự đoán</span></div>
+  <div class="history-foot"><span class="good-text" id="histOk">Đúng: 0</span><span class="bad-text" id="histBad">Sai: 0</span><span id="histRate">Tỷ lệ: 0%</span></div>
+</div>
+
+<div class="stats">
+  <span><span>Lưu</span><span id="sTotal">0</span></span>
+  <span><span>Chấm</span><span id="sJudged">0</span></span>
+  <span><span>Đúng</span><span class="ok" id="sOk">0</span></span>
+  <span><span>Sai</span><span class="bad" id="sBad">0</span></span>
+  <span><span>Tỉ lệ</span><span id="sAcc">0%</span></span>
+  <span></span>
+  <div class="bar-wrap">
+    <div class="bar-label"><span>8 tay gần nhất</span><span id="l8t">0/0</span></div>
+    <div class="bar"><div class="fill" id="l8b" style="width:0%">0%</div></div>
+  </div>
+</div>
+ 
+<div class="bots">
+  <button class="csv" onclick="csv()">CSV</button>
+  <button class="undo" onclick="undo()">↶ HOÀN TÁC</button>
+  <button class="clr" onclick="clr()">XÓA</button>
+</div>
+</div>
+<div class="tab-page" id="tabPage2" role="tabpanel" aria-labelledby="tabButton2">
+<p class="tab-note">Bộ lọc “Tất cả (P và B)” gộp các dự đoán PLAYER và BANKER; không phải phép cộng điểm.</p>
+<section class="tracker" aria-label="Phân tích chuyên sâu hệ số">
+  <h2>PHÂN TÍCH CHUYÊN SÂU · NHÓM HỆ SỐ</h2>
+  <div class="tracker-controls">
+    <label for="trackWindow">Dữ liệu</label><select id="trackWindow" onchange="renderTracker()"><option value="20">20 ván gần nhất</option><option value="50">50 ván gần nhất</option><option value="all" selected>Toàn bộ</option></select>
+    <label for="trackParity">Loại</label><select id="trackParity" onchange="renderTracker()"><option value="all">Chẵn + Lẻ</option><option value="CHẴN">Chẵn</option><option value="LẺ">Lẻ</option></select>
+    <label for="trackRec">Dự đoán</label><select id="trackRec" onchange="renderTracker()"><option value="all">Tất cả (P và B)</option><option value="PLAYER">PLAYER</option><option value="BANKER">BANKER</option></select>
+  </div>
+  <div id="trackSignal" class="signal muted">Chưa có dữ liệu.</div>
+  <div class="track-hint">Nhóm chính theo bước 5 → nhóm con bước 1 → nhóm nhỏ bước 0,2. Chạm để mở từng tầng và xem các ván.</div>
+  <div id="trackRows"></div>
+  <p class="subtle">Đ/S tính theo dự đoán đã lưu. Mỗi nhóm con chỉ dùng các ván thuộc khoảng đó. Số mẫu nhỏ và việc chọn khoảng sau khi xem kết quả có thể gây sai lệch; tỷ lệ cũ không chứng minh lợi thế cho ván tiếp theo. Công thức hiện tại dùng bài sau khi chia, nên không phải dự đoán trước ván.</p>
+</section>
+</div>
+</div>
+<div class="editor" id="editor" role="dialog" aria-modal="true" aria-label="Sửa ván">
+  <div class="editor-panel">
+    <h2 id="editTitle">Chỉnh sửa ván</h2>
+    <div id="editPred" class="edit-meta"></div>
+    <label for="editP">Lá nhà con P (cách nhau bằng dấu cách)</label>
+    <input id="editP" placeholder="Ví dụ: A 9 K" autocomplete="off">
+    <label for="editB">Lá nhà cái B (cách nhau bằng dấu cách)</label>
+    <input id="editB" placeholder="Ví dụ: 2 3 5" autocomplete="off">
+    <div id="editResult" class="calc-info"></div>
+    <p style="font-size:10px;color:#aaa;margin-top:6px">Dự đoán lúc lưu được giữ nguyên; sửa bài chỉ cập nhật kết quả Baccarat và Đ/S.</p>
+    <div class="actions"><button onclick="saveEdit()">LƯU SỬA</button><button onclick="closeEdit()">ĐÓNG</button></div>
+  </div>
+</div>
+ 
+<div id="trackHands" class="editor" role="dialog" aria-modal="true" aria-label="Danh sách ván trong nhóm">
+  <div class="editor-panel"><h2 id="trackHandsTitle">Các ván trong nhóm</h2><div id="trackHandsBody" class="hand-list"></div><div class="actions"><button onclick="document.getElementById('trackHands').classList.remove('open')">ĐÓNG</button></div></div>
+</div>
+<script>
+const KEY='bcr_v5';
+function switchTab(n){
+  [1,2].forEach(i=>{
+    const active=i===n;
+    document.getElementById('tabPage'+i).classList.toggle('selected',active);
+    document.getElementById('tabButton'+i).classList.toggle('selected',active);
+    document.getElementById('tabButton'+i).setAttribute('aria-selected',String(active));
+  });
+  if(n===2)renderTracker();
+  window.scrollTo({top:0,behavior:'instant'});
+}
+
+let side='p';
+let cards={p:[],b:[]};
+let editIndex=-1;let undoStack=[];
+ 
+function setSide(s){
+  side=s;
+  document.getElementById('sideP').classList.toggle('active-side',s==='p');
+  document.getElementById('sideB').classList.toggle('active-side',s==='b');
+}
+function lbl(v){return v===1?'A':v===11?'J':v===12?'Q':v===13?'K':''+v}
+ 
+function renderSlots(){
+  ['p','b'].forEach(s=>{
+    const el=document.getElementById('slots'+s.toUpperCase());
+    el.innerHTML='';
+    cards[s].forEach((v,i)=>{
+      const d=document.createElement('div');
+      d.className='slot on';
+      d.innerHTML=lbl(v)+'<span class="x" onclick="event.stopPropagation();rmCard(\''+s+'\','+i+')">×</span>';
+      el.appendChild(d);
+    });
+    for(let i=cards[s].length;i<2;i++){
+      const d=document.createElement('div');
+      d.className='slot';d.textContent='·';
+      el.appendChild(d);
+    }
+  });
+  calc(false);
+}
+ 
+function addCard(v){if(cards[side].length>=3)return;cards[side].push(v);renderSlots()}
+function rmCard(s,i){cards[s].splice(i,1);renderSlots()}
+function clearSide(){cards[side]=[];renderSlots()}
+function isFace(r){return r>=10}
+// Điểm Baccarat chuẩn: 10,J,Q,K=0; A=1; tổng lấy phần dư 10.
+function baccaratPoint(arr){return arr.reduce((n,v)=>n+(v>=10?0:v),0)%10}
+function winner(p,b){const a=baccaratPoint(p),z=baccaratPoint(b);return a===z?'TIE':a>z?'PLAYER':'BANKER'}
+function parseCards(s){
+  const v=s.trim().toUpperCase().split(/[\s,;]+/).filter(Boolean).map(x=>x==='A'?1:x==='J'?11:x==='Q'?12:x==='K'?13:Number(x));
+  if(v.length<2||v.length>3||v.some(x=>!Number.isInteger(x)||x<1||x>13))throw Error('Mỗi bên cần 2 hoặc 3 lá hợp lệ (A, 2–10, J, Q, K).');
+  return v;
+}
+function saveWithUndo(d){const old=load();if(saveData(d)){undoStack.push(JSON.stringify(old));if(undoStack.length>30)undoStack.shift();return true}return false}
+function undo(){if(!undoStack.length){alert('Chưa có thao tác để hoàn tác trong phiên mở trang này.');return}const old=JSON.parse(undoStack[undoStack.length-1]);if(saveData(old)){undoStack.pop();closeEdit();showPrediction(old.slice(-1)[0]||null);stats()}}
+function updateCalcInfo(p,b){document.getElementById('calcInfo').textContent='Điểm Baccarat: P '+p+' – B '+b+' · Thắng: '+(p===b?'Hòa':p>b?'P':'B')}
+
+ 
+function getSum(s){
+  const c=cards[s];
+  if(!c.length)return 0;
+  if(s==='p'){
+    if(c.length===3){
+      const normals=c.filter(r=>!isFace(r));
+      if(normals.length){const ns=normals.reduce((a,b)=>a+b,0);if(ns<10)return ns}
+      return c.reduce((a,b)=>a+b,0);
+    }
+    return c.reduce((a,b)=>a+b,0);
+  }
+  let sum=c.reduce((a,b)=>a+b,0);
+  if(c.length===3)sum=sum%10;
+  return sum;
+}
+ 
+function showPrediction(x){
+  const heso=x?x.heso:'-', chanle=x?x.chanle:'-', rec=x?x.recommend:'-';
+  document.getElementById('heso').textContent=heso;
+  document.getElementById('chanle').textContent=chanle;
+  document.getElementById('chanle').className='chanle '+(chanle==='CHẴN'?'chan':'le');
+  document.getElementById('rec').textContent=rec;
+  document.getElementById('rec').className='rec '+(rec==='BANKER'?'b':'p');
+}
+function calc(save){
+  const pSum=getSum('p'),bSum=getSum('b');
+  document.getElementById('sumP').textContent=pSum;
+  document.getElementById('sumB').textContent=bSum;
+  // Chỉ chốt dự đoán khi người dùng bấm TÍNH & LƯU.
+  // Thêm/xóa lá bài không được ghi đè dự đoán đã chốt.
+  if(!save)return;
+  if(cards.p.length<2||cards.b.length<2){alert('Mỗi bên cần nhập ít nhất 2 lá bài trước khi TÍNH & LƯU.');return}
+  let heso='-',chanle='-',rec='PLAYER';
+  if(bSum===0){chanle='CHẴN'}
+  else{
+    const h=pSum/bSum;heso=h.toFixed(2);const ip=Math.floor(h);
+    if(ip%2===0){chanle='CHẴN';rec='PLAYER'}
+    else{chanle='LẺ';rec='BANKER'}
+  }
+  const actual=winner(cards.p,cards.b);
+  const bp=baccaratPoint(cards.p),bb=baccaratPoint(cards.b);
+  const item={p:cards.p.map(lbl).join(' '),b:cards.b.map(lbl).join(' '),pSum,bSum,heso,chanle,recommend:rec,actual,correct:actual==='TIE'?null:rec===actual,bp,bb,time:new Date().toLocaleString('vi-VN')};
+  const d=load();d.push(item);
+  if(!saveWithUndo(d))return;
+  showPrediction(item);updateCalcInfo(bp,bb);stats();
+  // Xóa phần nhập cho ván tiếp theo nhưng không làm mất lịch sử hay dự đoán đã lưu.
+  cards={p:[],b:[]};renderSlots();
+}
+function saveData(d){
+  try{localStorage.setItem(KEY,JSON.stringify(d));return true}
+  catch(e){alert('Không lưu được dữ liệu trên Safari. Hãy kiểm tra bộ nhớ hoặc chế độ duyệt riêng tư.');return false}
+}
+
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||[]}catch{return[]}}
+ 
+function record(r){
+  const d=load();if(!d.length){alert('Chưa có ván đã lưu!');return}
+  const i=d.length-1;
+  if(!confirm('Kết quả ván #'+(i+1)+' đã được tính tự động từ các lá bài. Bạn muốn chỉnh thủ công thành '+(r==='PLAYER'?'P':r==='BANKER'?'B':'Hòa')+'?'))return;
+  d[i].actual=r;d[i].correct=r==='TIE'?null:d[i].recommend===r;
+  if(saveWithUndo(d))stats();
+}
+function showHistoryDetail(i){
+  const x=load()[i];if(!x)return;editIndex=i;
+  document.getElementById('editTitle').textContent='CHỈNH SỬA VÁN #'+(i+1);
+  document.getElementById('editPred').textContent='Dự đoán đã chốt: '+(x.recommend==='PLAYER'?'PLAYER':'BANKER')+' | Hệ số: '+(x.heso??'—')+' | '+(x.chanle||'—')+' | Tổng dự đoán P/B: '+(x.pSum??'—')+'/'+(x.bSum??'—')+' | Điểm Baccarat P/B: '+(x.bp??'—')+'/'+(x.bb??'—')+' | Kết quả hiện tại: '+(x.actual==='PLAYER'?'P':x.actual==='BANKER'?'B':x.actual==='TIE'?'Hòa':'Chờ')+' | Chấm: '+(x.actual==='TIE'?'Hòa':x.correct===true?'Đúng':x.correct===false?'Sai':'Chờ');
+  document.getElementById('editP').value=x.p||'';document.getElementById('editB').value=x.b||'';
+  document.getElementById('editResult').textContent='Sửa lá bài rồi bấm LƯU SỬA để chấm lại.';
+  document.getElementById('editor').classList.add('open');
+}
+function closeEdit(){document.getElementById('editor').classList.remove('open');editIndex=-1}
+function saveEdit(){
+  const d=load();if(editIndex<0||!d[editIndex])return;
+  let p,b;try{p=parseCards(document.getElementById('editP').value);b=parseCards(document.getElementById('editB').value)}catch(e){alert(e.message);return}
+  const x=d[editIndex];x.p=p.map(lbl).join(' ');x.b=b.map(lbl).join(' ');
+  x.bp=baccaratPoint(p);x.bb=baccaratPoint(b);x.actual=winner(p,b);
+  x.correct=x.actual==='TIE'?null:x.actual===x.recommend;
+  // Dự đoán gốc không tính lại theo bài đã sửa để tránh thay đổi dự báo sau khi biết kết quả.
+  if(saveWithUndo(d)){closeEdit();stats();if(editIndex===d.length-1)showPrediction(d[d.length-1])}
+}
+function renderHistory(d){
+  const wrap=document.getElementById('historyStrip');
+  wrap.replaceChildren();
+  if(!d.length){const e=document.createElement('span');e.className='history-empty';e.textContent='Chưa có dự đoán';wrap.appendChild(e)}
+  d.forEach((x,i)=>{
+    const isTie=x.actual==='TIE';
+    const status=isTie?'H':x.actual==null?'–':x.correct===true?'Đ':'S';
+    const css=isTie?'tie':x.actual==null?'wait':x.correct===true?'good':'wrong';
+    const btn=document.createElement('button');btn.type='button';btn.className='history-cell '+css;
+    btn.textContent=status;btn.title='Ván #'+(i+1);btn.setAttribute('aria-label','Xem ván '+(i+1));
+    btn.onclick=()=>showHistoryDetail(i);wrap.appendChild(btn);
+  });
+  // Luôn đưa ván mới nhất vào tầm nhìn.
+  wrap.scrollLeft=wrap.scrollWidth;
+  const judged=d.filter(x=>x.actual&&x.actual!=='TIE');
+  const ok=judged.filter(x=>x.correct===true).length;
+  const bad=judged.filter(x=>x.correct===false).length;
+  document.getElementById('histOk').textContent='Đúng: '+ok;
+  document.getElementById('histBad').textContent='Sai: '+bad;
+  document.getElementById('histRate').textContent='Tỷ lệ: '+(judged.length?Math.round(ok/judged.length*100):0)+'%';
+}
+
+
+// Phân tích theo cây khoảng cố định: nhóm chính 5, nhóm con 1, nhóm nhỏ 0.2.
+// Các khoảng [lo,hi) không chồng lấn, một ván thuộc duy nhất một nhóm ở mỗi tầng.
+function wilsonLower(ok,n){if(!n)return 0;const z=1.96,p=ok/n,z2=z*z;return (p+z2/(2*n)-z*Math.sqrt(p*(1-p)/n+z2/(4*n)))/(1+z2/n)}
+function ratioNum(x){const a=Number(x.heso);return Number.isFinite(a)&&a>=0&&x.heso!==''&&x.heso!=='-'?a:null}
+let openGroups=new Set();
+function allTracked(){return load().map((x,index)=>({...x,_idx:index})).filter(x=>(x.correct===true||x.correct===false)&&ratioNum(x)!==null)}
+function trackedItems(){
+  const full=allTracked(),w=document.getElementById('trackWindow').value;
+  const recent=w==='all'?full:full.slice(-Number(w));
+  const parity=document.getElementById('trackParity').value,rec=document.getElementById('trackRec').value;
+  return recent.filter(x=>(parity==='all'||x.chanle===parity)&&(rec==='all'||x.recommend===rec));
+}
+function fmtBound(n){return Number(n.toFixed(2)).toLocaleString('vi-VN',{maximumFractionDigits:2})}
+function rowsAt(items,lo,hi){const eps=1e-9;return items.filter(x=>{const v=ratioNum(x);return v!==null&&v+eps>=lo&&v<hi-eps})}
+function groupBuckets(items,base,step,count){let out=[];for(let i=0;i<count;i++){const lo=Number((base+i*step).toFixed(6)),hi=Number((lo+step).toFixed(6)),rows=rowsAt(items,lo,hi);if(rows.length)out.push({lo,hi,rows})}return out}
+function toggleGroup(id){if(openGroups.has(id))openGroups.delete(id);else openGroups.add(id);renderTracker()}
+function makeDetailButton(label,fn){const b=document.createElement('button');b.type='button';b.className='track-action';b.textContent=label;b.addEventListener('click',e=>{e.stopPropagation();fn()});return b}
+function showGroupHands(rows,label){
+  const panel=document.getElementById('trackHands'),body=document.getElementById('trackHandsBody'),title=document.getElementById('trackHandsTitle');
+  title.textContent='CÁC VÁN · HỆ SỐ '+label+' ('+rows.length+')';body.replaceChildren();
+  rows.slice().reverse().forEach(x=>{
+    const b=document.createElement('button');b.type='button';b.className='hand-row';
+    const d=x.actual==='TIE'?'H':x.correct===true?'Đ':'S';
+    b.textContent='#'+(x._idx+1)+' · '+x.heso+' · '+(x.chanle||'?')+' · '+(x.recommend==='PLAYER'?'P':'B')+' → '+(x.actual==='PLAYER'?'P':x.actual==='BANKER'?'B':'H')+' · '+d;
+    b.addEventListener('click',()=>{panel.classList.remove('open');showHistoryDetail(x._idx)});body.appendChild(b);
+  });
+  panel.classList.add('open');
+}
+function addGroup(parent,g,level,items){
+  const ok=g.rows.filter(x=>x.correct===true).length,n=g.rows.length,rate=100*ok/n,lower=wilsonLower(ok,n);
+  const id=level+':'+g.lo.toFixed(2),expanded=openGroups.has(id),div=document.createElement('div');div.className='segment depth'+level;
+  const head=document.createElement('button');head.type='button';head.className='group-toggle';
+  const name=document.createElement('span');name.textContent=(level===0?'NHÓM ':level===1?'↳ ':'↳ ') +fmtBound(g.lo)+'–'+fmtBound(g.hi);
+  const info=document.createElement('span');info.textContent=ok+'Đ / '+(n-ok)+'S · '+rate.toFixed(1)+'% '+(level<2?(expanded?'▾':'▸'):'');
+  head.append(name,info);head.addEventListener('click',()=>{if(level<2)toggleGroup(id);else showGroupHands(g.rows,fmtBound(g.lo)+'–'+fmtBound(g.hi))});div.appendChild(head);
+  const meter=document.createElement('div');meter.className='meter';const fill=document.createElement('div');fill.style.width=rate+'%';meter.appendChild(fill);div.appendChild(meter);
+  const meta=document.createElement('div');meta.className='metrics';meta.textContent='n='+n+' · Wilson 95% ≥ '+(lower*100).toFixed(1)+'% · '+(n<20?'Ít mẫu (dưới 20)':'Đã đủ 20 mẫu; cần kiểm chứng mới');div.appendChild(meta);
+  const actions=document.createElement('div');actions.className='group-actions';actions.appendChild(makeDetailButton('Xem '+n+' ván',()=>showGroupHands(g.rows,fmtBound(g.lo)+'–'+fmtBound(g.hi))));
+  if(level<2)actions.appendChild(makeDetailButton(expanded?'Thu gọn':'Chia sâu',()=>toggleGroup(id)));
+  div.appendChild(actions);
+  if(expanded&&level<2){
+    const step=level===0?1:0.2,parts=groupBuckets(items,g.lo,step,5);
+    if(parts.length){const inner=document.createElement('div');inner.className='group-children';parts.forEach(p=>addGroup(inner,p,level+1,items));div.appendChild(inner)}
+  }
+  parent.appendChild(div);
+}
+function renderTracker(){
+  const items=trackedItems(),root=document.getElementById('trackRows'),signal=document.getElementById('trackSignal');root.replaceChildren();
+  if(!items.length){signal.className='signal muted';signal.textContent='Không có ván đã chấm với hệ số hợp lệ trong bộ lọc hiện tại.';return}
+  const byBase=new Map();items.forEach(x=>{const base=Math.floor(ratioNum(x)/5)*5;if(!byBase.has(base))byBase.set(base,[]);byBase.get(base).push(x)});
+  const groups=[...byBase].sort((a,b)=>a[0]-b[0]).map(([lo,rows])=>({lo,hi:lo+5,rows}));
+  groups.forEach(g=>addGroup(root,g,0,items));
+  const total=items.length,ok=items.filter(x=>x.correct===true).length;
+  signal.className='signal muted';signal.textContent='Đang xem '+total+' ván · '+ok+' đúng / '+(total-ok)+' sai ('+(100*ok/total).toFixed(1)+'%). Chọn một nhóm để xem các mức 1 và 0,2 hệ số. Tỷ lệ chỉ mô tả lịch sử.';
+}
+
+function stats(){
+  const d=load();
+  renderHistory(d);
+  renderTracker();
+  const judged=d.filter(x=>x.actual&&x.actual!=='TIE');
+  const ok=judged.filter(x=>x.correct).length;
+  const bad=judged.filter(x=>x.correct===false).length;
+  const acc=judged.length?Math.round(ok/judged.length*100):0;
+  document.getElementById('sTotal').textContent=d.length;
+  document.getElementById('sJudged').textContent=judged.length;
+  document.getElementById('sOk').textContent=ok;
+  document.getElementById('sBad').textContent=bad;
+  document.getElementById('sAcc').textContent=acc+'%';
+  const l8=judged.slice(-8);
+  const l8ok=l8.filter(x=>x.correct).length;
+  const pct=l8.length?Math.round(l8ok/l8.length*100):0;
+  document.getElementById('l8t').textContent=l8ok+'/'+l8.length;
+  const bar=document.getElementById('l8b');
+  bar.style.width=pct+'%';bar.textContent=pct+'%';
+}
+ 
+function csv(){
+  const d=load();
+  if(!d.length){alert('Chưa có dữ liệu');return}
+  let t='Thời gian,Player,Banker,Xanh,Đỏ,Hệ số,Chẵn/Lẻ,Dự đoán,Kết quả,Đúng/Sai,Điểm P,Điểm B\n';
+  d.forEach(x=>{
+    let ds=x.correct===true?'Đúng':x.correct===false?'Sai':x.actual==='TIE'?'Hòa':'';
+    t+='"'+x.time+'",'+x.p+','+x.b+','+x.pSum+','+x.bSum+','+x.heso+','+x.chanle+','+x.recommend+','+(x.actual||'')+','+ds+','+(x.bp??'')+','+(x.bb??'')+'\n';
+  });
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['\uFEFF'+t],{type:'text/csv'}));
+  a.download='baccarat_'+Date.now()+'.csv';a.click();
+}
+ 
+function clr(){if(confirm('Xóa toàn bộ lịch sử dự đoán? Bạn có thể hoàn tác khi chưa đóng trang.')){if(saveWithUndo([])){showPrediction(null);stats()}}}
+ 
+function migrateUnjudged(){
+  // Bổ sung điểm/kết quả Baccarat cho bản ghi cũ chưa chấm nếu còn đủ lá bài.
+  const marker=KEY+'_baccarat_migrated_v1';
+  if(localStorage.getItem(marker))return;
+  const d=load();let changed=false;
+  d.forEach(x=>{if(x.actual!==null&&x.actual!==undefined)return;
+    try{const p=parseCards(x.p||''),b=parseCards(x.b||'');x.bp=baccaratPoint(p);x.bb=baccaratPoint(b);
+      x.actual=winner(p,b);x.correct=x.actual==='TIE'?null:x.actual===x.recommend;changed=true;
+    }catch(e){}
+  });
+  if(changed){try{localStorage.setItem(KEY+'_backup_before_baccarat',JSON.stringify(load()));saveData(d)}catch(e){}}
+  try{localStorage.setItem(marker,'1')}catch(e){}
+}
+migrateUnjudged();renderSlots();showPrediction(load().slice(-1)[0]||null);stats();
+</script>
+</body>
+</html>
